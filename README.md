@@ -59,29 +59,3 @@ spring.datasource.url=jdbc:mysql://localhost:3306/covid_db
 spring.datasource.username=root
 spring.datasource.password=tu_password
 spring.jpa.hibernate.ddl-auto=update
-
- Requisitos Técnicos Cubiertos
-Consumo real de una API externa (RapidAPI)
-
-Ejecución automática con hilo (Thread)
-
-Filtro por fecha y país (ISO)
-
-Prevención de duplicados con entidad ExecutedReport
-
-Persistencia de datos usando JPA
-
-Arquitectura en capas (controller, service, repository)
-
-Logs informativos en consola
-
-Endpoints REST documentados
-
-👤 Autor
-Carlos Valiente
-
-🌐 Fuente de la API
-COVID-19 Statistics by RapidAPI
-
-📅 Fecha
-Mayo 2025
