@@ -59,3 +59,8 @@ spring.datasource.url=jdbc:mysql://localhost:3306/covid_db
 spring.datasource.username=root
 spring.datasource.password=tu_password
 spring.jpa.hibernate.ddl-auto=update
+
+
+
+ ## Video explicativo: https://drive.google.com/file/d/1NlzSuM0-VPkqFcwzLBhTisybwLwInO4r/view?usp=drive_link
+
