@@ -1,8 +1,10 @@
 package com.covid.covidtracker.config;
 
+import com.covid.covidtracker.model.ExecutedReport;
 import com.covid.covidtracker.model.Province;
 import com.covid.covidtracker.model.Region;
 import com.covid.covidtracker.model.Report;
+import com.covid.covidtracker.service.ExecutedReportService;
 import com.covid.covidtracker.service.ProvinceService;
 import com.covid.covidtracker.service.RegionService;
 import com.covid.covidtracker.service.ReportService;
@@ -34,6 +36,9 @@ public class StartupThreadRunner {
 
     @Autowired
     private ReportService reportService;
+
+    @Autowired
+    private ExecutedReportService executedReportService;
 
     @Autowired
     private RestTemplate restTemplate;
@@ -104,7 +109,7 @@ public class StartupThreadRunner {
 
     private void getProvincesFromApi() {
         try {
-            System.out.println("📡 Solicitando provincias de Guatemala (iso = GTM)...");
+            System.out.println("📡 Solicitando provincias de Estados Unidos (iso = USA)...");
 
             HttpHeaders headers = new HttpHeaders();
             headers.set("X-RapidAPI-Key", rapidApiKey);
@@ -113,7 +118,7 @@ public class StartupThreadRunner {
             HttpEntity<String> entity = new HttpEntity<>(headers);
 
             ResponseEntity<String> response = restTemplate.exchange(
-                    "https://covid-19-statistics.p.rapidapi.com/provinces?iso=GTM",
+                    "https://covid-19-statistics.p.rapidapi.com/provinces?iso=USA",
                     HttpMethod.GET,
                     entity,
                     String.class
@@ -151,8 +156,16 @@ public class StartupThreadRunner {
     }
 
     private void getReportsFromApi() {
+        String date = "2022-04-16";
+        String iso = "USA";
+
+        if (executedReportService.alreadyExecuted(date, iso)) {
+            System.out.println("⚠️ Ya se ejecutó un reporte para esta fecha e ISO. No se realizará la petición nuevamente.");
+            return;
+        }
+
         try {
-            System.out.println("📡 Solicitando reportes de GTM para 2022-04-16...");
+            System.out.println("📡 Solicitando reportes de " + iso + " para " + date + "...");
 
             HttpHeaders headers = new HttpHeaders();
             headers.set("X-RapidAPI-Key", rapidApiKey);
@@ -160,7 +173,7 @@ public class StartupThreadRunner {
 
             HttpEntity<String> entity = new HttpEntity<>(headers);
 
-            String url = "https://covid-19-statistics.p.rapidapi.com/reports?iso=GTM&date=2022-04-16";
+            String url = "https://covid-19-statistics.p.rapidapi.com/reports?iso=" + iso + "&date=" + date;
 
             ResponseEntity<String> response = restTemplate.exchange(
                     url,
@@ -179,17 +192,18 @@ public class StartupThreadRunner {
                 for (JsonNode reportNode : data) {
                     String region = reportNode.path("region").path("name").asText();
                     String province = reportNode.path("region").path("province").asText();
-                    String date = reportNode.path("date").asText();
+                    String reportDate = reportNode.path("date").asText();
                     int confirmed = reportNode.path("confirmed").asInt();
                     int deaths = reportNode.path("deaths").asInt();
                     int recovered = reportNode.path("recovered").asInt();
                     int active = reportNode.path("active").asInt();
 
-                    Report report = new Report(region, province, date, confirmed, deaths, recovered, active);
+                    Report report = new Report(region, province, reportDate, confirmed, deaths, recovered, active);
                     reportList.add(report);
                 }
 
                 reportService.saveAll(reportList);
+                executedReportService.saveExecution(date, iso);
                 System.out.println("✅ " + reportList.size() + " reportes guardados en la base de datos.");
             } else {
                 System.err.println("❌ Error al obtener reportes: " + response.getStatusCode());
