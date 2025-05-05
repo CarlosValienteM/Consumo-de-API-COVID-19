@@ -1,82 +1,87 @@
-Proyecto: Consumo de API COVID-19
+# 📘 Parcial 2 - Proyecto: Consumo de API COVID-19
 
 Este proyecto en Java con Spring Boot consume una API pública que proporciona estadísticas de COVID-19 por región, provincia y fecha específica. Los datos se almacenan en una base de datos MariaDB/MySQL usando JPA. El proceso se ejecuta automáticamente 15 segundos después del arranque, mediante un hilo.
 
-📊 Tecnologías Usadas
+---
 
-Java 17
+## 📊 Tecnologías Usadas
 
-Spring Boot 3.4.5
+- Java 17  
+- Spring Boot 3.4.5  
+- Maven  
+- JPA (Hibernate)  
+- MySQL / MariaDB  
+- RapidAPI - COVID-19 Statistics API  
 
-Maven
+---
 
-JPA (Hibernate)
+## 📁 Estructura del Proyecto
 
-MySQL / MariaDB
+- `model/`: Contiene las entidades `Region`, `Province`, `Report`, `ExecutedReport`.  
+- `repository/`: Interfaces JPA para acceder a la base de datos.  
+- `service/`: Lógica de negocio separada para cada entidad.  
+- `controller/`: Endpoints REST para exponer los datos guardados.  
+- `config/`: Clases de configuración, incluyendo el hilo (`StartupThreadRunner`).  
 
-RapidAPI - COVID-19 Statistics API
+---
 
-📁 Estructura del Proyecto
+## ⏱️ Flujo de Ejecución Automática
 
-model/: Contiene las entidades Region, Province y Report.
+1. Al iniciar la aplicación, se espera 15 segundos (`Thread.sleep(15000)`).
+2. Luego se consumen automáticamente los siguientes endpoints de la API:
 
-repository/: Interfaces para acceder a la base de datos.
+   - `/regions`
+   - `/provinces` (filtrado por `iso=GTM`)
+   - `/reports` (filtrado por `iso=GTM` y `date=2022-04-16`)
 
-service/: Lógica de negocio separada para cada entidad.
+3. Los datos se procesan, **se evita la duplicación** usando la entidad `ExecutedReport`, y se almacenan en la base de datos.
 
-controller/: Endpoints REST para exponer los datos guardados.
+---
 
-config/: Clases de configuración, incluyendo el hilo (StartupThreadRunner).
+## 🔎 Funcionalidades REST Disponibles
 
-⏱️ Flujo de Ejecución
+- `GET /api/regions`  
+- `GET /api/provinces`  
+- `GET /api/reports`  
+- `GET /api/reports/by-date?date=YYYY-MM-DD`  
+- `GET /api/reports/by-region?name=US`  
+- `GET /api/reports/by-province?name=California`  
+- `GET /api/reports/grouped-by-province?date=YYYY-MM-DD&iso=US` (agrupamiento por provincia)
 
-Al iniciar la aplicación, se espera 15 segundos (hilo).
+---
 
-Se consumen los siguientes endpoints de la API:
+## 📆 Configuración
 
-/regions
+En el archivo `application.properties`:
 
-/provinces (filtrado por iso = GTM)
-
-/reports (filtrado por iso = GTM y fecha 2022-04-16)
-
-Los datos se procesan y almacenan en la base de datos.
-
-Los registros se pueden consultar mediante los controladores REST:
-
-/api/regions
-
-/api/provinces
-
-/api/reports
-
-📆 Configuración
-
-En application.properties:
-
+```properties
 spring.datasource.url=jdbc:mysql://localhost:3306/covid_db
 spring.datasource.username=root
-spring.datasource.password= (tu password aquí)
+spring.datasource.password=tu_password
 spring.jpa.hibernate.ddl-auto=update
 
-🔧 Requisitos Técnicos Cubiertos ✅
+ Requisitos Técnicos Cubiertos
+Consumo real de una API externa (RapidAPI)
 
+Ejecución automática con hilo (Thread)
 
+Filtro por fecha y país (ISO)
 
-🔗 Repositorio
+Prevención de duplicados con entidad ExecutedReport
 
-https://github.com/CarlosValienteM/Consumo-de-API-COVID-19
+Persistencia de datos usando JPA
 
-✅ Autor
+Arquitectura en capas (controller, service, repository)
 
+Logs informativos en consola
+
+Endpoints REST documentados
+
+👤 Autor
 Carlos Valiente
 
 🌐 Fuente de la API
-
 COVID-19 Statistics by RapidAPI
-https://rapidapi.com/axisbits-axisbits-default/api/covid-19-statistics
 
 📅 Fecha
-
 Mayo 2025
-
