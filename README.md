@@ -11,7 +11,8 @@ Este proyecto en Java con Spring Boot consume una API pública que proporciona e
 - Maven  
 - JPA (Hibernate)  
 - MySQL / MariaDB  
-- RapidAPI - COVID-19 Statistics API  
+- RapidAPI - COVID-19 Statistics API
+- Video explicativo: https://drive.google.com/file/d/1NlzSuM0-VPkqFcwzLBhTisybwLwInO4r/view?usp=drive_link
 
 ---
 
@@ -62,5 +63,5 @@ spring.jpa.hibernate.ddl-auto=update
 
 
 
- ## Video explicativo: https://drive.google.com/file/d/1NlzSuM0-VPkqFcwzLBhTisybwLwInO4r/view?usp=drive_link
+
 
